@@ -25,47 +25,62 @@ import tecnm.oaxaca.dsos.ExamenU1DSOS.Utils.GenerarICA;
 @RestController
 @RequestMapping("/api/v1/indice")
 public class ICAController {
-    
+
     @Autowired
     private ICAService icaService;
     @Autowired
     private GenerarICA calculoIca;
-    
+
     @PostMapping("/")
     public CustomResponse createAlumno(@RequestBody ICAModel icaModel) {
-        calculoIca.calcularICA(icaModel.getMedidaCintura(), icaModel.getMedidaAltura(),icaModel.getGenero());
+        calculoIca.calcularICA(icaModel.getMedidaCintura(), icaModel.getMedidaAltura(), icaModel.getGenero());
         CustomResponse customResponse = new CustomResponse();
         customResponse.setData(calculoIca);
         icaService.createAlumno(icaModel);
+        ICAModel alumno = icaService.getAlumno(icaModel.getNoControl());
+        if (alumno == null) {
+            calculoIca.calcularICA(icaModel.getMedidaCintura(), icaModel.getMedidaAltura(), icaModel.getGenero());
+            customResponse.setData(calculoIca);
+            icaService.createAlumno(icaModel);
+        } else {
+            Double cintura = alumno.getMedidaCintura();
+            Double altura = alumno.getMedidaAltura();
+            if (cintura == null || altura == null) {
+                customResponse.setData("No se cuenta con la informacion necesaria para realizar el calculo");
+            } else {
+                calculoIca.calcularICA(alumno.getMedidaCintura(), alumno.getMedidaAltura(), alumno.getGenero());
+                customResponse.setData(calculoIca);
+            }
+        }
         return customResponse;
     }
-    
+
     @GetMapping("/")
     public CustomResponse getAlumnos() {
         CustomResponse customResponse = new CustomResponse();
         customResponse.setData(icaService.getAlumnos());
         return customResponse;
     }
-    
+
     @GetMapping("/{noControl}")
     public CustomResponse getAlumno(@PathVariable String noControl) {
         CustomResponse customResponse = new CustomResponse();
         customResponse.setData(icaService.getAlumno(noControl));
         return customResponse;
     }
-    
+
     @PutMapping("/{noControl}")
     public CustomResponse updateAlumno(@RequestBody ICAModel ica, @PathVariable String noControl) {
         CustomResponse customResponse = new CustomResponse();
         icaService.updateAlumno(ica, noControl);
         return customResponse;
     }
-    
+
     @DeleteMapping("/{noControl}")
     public CustomResponse deleteAlumno(@PathVariable String noControl) {
         CustomResponse customResponse = new CustomResponse();
         icaService.deleteAlumno(noControl);
         return customResponse;
     }
-    
+
 }
