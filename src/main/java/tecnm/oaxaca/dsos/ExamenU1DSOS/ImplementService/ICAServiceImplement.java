@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import tecnm.oaxaca.dsos.ExamenU1DSOS.Models.ICAModel;
 import tecnm.oaxaca.dsos.ExamenU1DSOS.Repository.ICARepository;
 import tecnm.oaxaca.dsos.ExamenU1DSOS.Service.ICAService;
-import tecnm.oaxaca.dsos.ExamenU1DSOS.Utils.GenerarICA;
+import tecnm.oaxaca.dsos.ExamenU1DSOS.Utils.Functions;
 
 /**
  *

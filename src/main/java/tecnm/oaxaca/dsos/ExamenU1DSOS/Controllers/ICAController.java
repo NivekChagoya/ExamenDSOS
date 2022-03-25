@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tecnm.oaxaca.dsos.ExamenU1DSOS.Service.ICAService;
 import tecnm.oaxaca.dsos.ExamenU1DSOS.Models.ICAModel;
 import tecnm.oaxaca.dsos.ExamenU1DSOS.Utils.CustomResponse;
-import tecnm.oaxaca.dsos.ExamenU1DSOS.Utils.GenerarICA;
+import tecnm.oaxaca.dsos.ExamenU1DSOS.Utils.Functions;
 
 /**
  *
@@ -29,27 +29,23 @@ public class ICAController {
     @Autowired
     private ICAService icaService;
     @Autowired
-    private GenerarICA calculoIca;
+    private Functions calculo;
 
+    //Crear un nuevo dato y validacion de que si ya existe retorne sus valores y en caso de un valor es null mandar mensaje
     @PostMapping("/")
     public CustomResponse createAlumno(@RequestBody ICAModel icaModel) {
-        calculoIca.calcularICA(icaModel.getMedidaCintura(), icaModel.getMedidaAltura(), icaModel.getGenero());
         CustomResponse customResponse = new CustomResponse();
-        customResponse.setData(calculoIca);
-        icaService.createAlumno(icaModel);
         ICAModel alumno = icaService.getAlumno(icaModel.getNoControl());
         if (alumno == null) {
-            calculoIca.calcularICA(icaModel.getMedidaCintura(), icaModel.getMedidaAltura(), icaModel.getGenero());
-            customResponse.setData(calculoIca);
+            calculo.calcularICA(icaModel.getMedidaCintura(), icaModel.getMedidaAltura(), icaModel.getGenero());
+            customResponse.setData(calculo);
             icaService.createAlumno(icaModel);
         } else {
-            Double cintura = alumno.getMedidaCintura();
-            Double altura = alumno.getMedidaAltura();
-            if (cintura == null || altura == null) {
+            if (alumno.getMedidaCintura() == 0 || alumno.getMedidaAltura() == 0) {
                 customResponse.setData("No se cuenta con la informacion necesaria para realizar el calculo");
             } else {
-                calculoIca.calcularICA(alumno.getMedidaCintura(), alumno.getMedidaAltura(), alumno.getGenero());
-                customResponse.setData(calculoIca);
+                calculo.calcularICA(alumno.getMedidaCintura(), alumno.getMedidaAltura(), alumno.getGenero());
+                customResponse.setData(calculo);
             }
         }
         return customResponse;

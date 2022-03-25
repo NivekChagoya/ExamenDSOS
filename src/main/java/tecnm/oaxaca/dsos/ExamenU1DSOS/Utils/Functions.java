@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author KEVIN CHAGOYA
  */
 @Component
-public class GenerarICA {
+public class Functions {
 
     private double ica;
     private String nivel;
